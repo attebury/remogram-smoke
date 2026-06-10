@@ -1,17 +1,19 @@
 # remogram-smoke
 
-Minimal cross-forge fixture repo for live **remogram** v1 smoke tests (read/plan commands only).
+Minimal cross-forge fixture repo for live **Remogram** v1 smoke tests (read/plan commands only).
 
-**Source of truth:** GitLab (`origin`). Other forges are mirrors created from this repo.
+**Source of truth:** GitLab (`origin`). Other forges are mirrors of the same git content.
+
+**Product repo:** [Remogram](https://github.com/attebury/remogram) — CLI/MCP implementation. This repo is only for live forge fixtures.
 
 ## Forges
 
-| Remote | Forge | Provider | Smoke slug |
-|--------|-------|----------|--------------|
-| `origin` | gitlab.com | `gitlab-api` | `gitlab-api` |
-| `gitea-local` | localhost Gitea | `gitea-api` | `gitea-local` |
-| `gitea-com` | gitea.com | `gitea-api` | `gitea-com` |
-| `github` | github.com | `github-api` | `github-api` |
+| Remote | Forge | Provider | Smoke slug | Public URL |
+|--------|-------|----------|--------------|------------|
+| `origin` | gitlab.com | `gitlab-api` | `gitlab-api` | https://gitlab.com/attebury/remogram-smoke |
+| `github` | github.com | `github-api` | `github-api` | https://github.com/attebury/remogram-smoke |
+| `gitea-com` | gitea.com | `gitea-api` | `gitea-com` | https://gitea.com/attebury/remogram-smoke |
+| `gitea-local` | localhost Gitea | `gitea-api` | `gitea-local` | *(your instance)* |
 
 Create a `gitea.com` mirror manually or run `./scripts/publish-forges.sh` with `GITEA_COM_TOKEN` set (see below). Use the same layout as `gitea-local` with your hosted base URL.
 
