@@ -52,12 +52,14 @@ ensure_github_repo
 add_remote_once gitea-local "${GITEA_URL}/${GITEA_USER}/${REPO_NAME}.git"
 add_remote_once github "https://github.com/${GITHUB_OWNER}/${REPO_NAME}.git"
 
-for remote in origin gitea-local github; do
+for remote in gitea-local github origin; do
   if git remote get-url "$remote" >/dev/null 2>&1; then
     echo "Pushing main and feature/smoke-1 -> ${remote}"
-    git push -u "$remote" main
-    git push -u "$remote" feature/smoke-1 2>/dev/null || git push "$remote" feature/smoke-1
+    git push -u "$remote" main || echo "warn: push main to ${remote} failed" >&2
+    git push -u "$remote" feature/smoke-1 2>/dev/null || git push "$remote" feature/smoke-1 || echo "warn: push feature/smoke-1 to ${remote} failed" >&2
   fi
 done
 
 echo "Publish complete. Open MR/PR #1 on each forge if not already present."
+echo "GitLab push requires GITLAB_TOKEN or SSH; use:"
+echo "  git push https://oauth2:\${GITLAB_TOKEN}@gitlab.com/${GITHUB_OWNER}/${REPO_NAME}.git main"

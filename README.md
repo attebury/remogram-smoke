@@ -59,6 +59,20 @@ remogram merge plan --number 1 --json
 
 On local Gitea without status posting, `check_conclusion: "missing"` is an expected forge fact.
 
+**Known limits:** GitHub `pr view` may return `oversized_raw_output` on real PRs until remogram raises the response byte cap (same dogfood issue as remogram PR #20).
+
+## GitLab push (source of truth)
+
+HTTPS push needs a personal access token:
+
+```bash
+export GITLAB_TOKEN=...
+git push "https://oauth2:${GITLAB_TOKEN}@gitlab.com/attebury/remogram-smoke.git" main
+git push "https://oauth2:${GITLAB_TOKEN}@gitlab.com/attebury/remogram-smoke.git" feature/smoke-1
+```
+
+Then open MR !1: `feature/smoke-1` → `main` in GitLab UI, or use the API with `GITLAB_TOKEN`.
+
 ## Auth
 
 | Provider | Environment variable |
