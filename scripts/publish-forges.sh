@@ -66,6 +66,18 @@ add_remote_once gitea-local "${GITEA_URL}/${GITEA_USER}/${REPO_NAME}.git"
 add_remote_once gitea-com "${GITEA_COM_URL}/${GITEA_USER}/${REPO_NAME}.git"
 add_remote_once github "https://github.com/${GITHUB_OWNER}/${REPO_NAME}.git"
 
+gitea_auth_push_url() {
+  local base_url=$1
+  local token=$2
+  local host="${base_url#https://}"
+  host="${host#http://}"
+  if [[ "$base_url" == https://* ]]; then
+    echo "https://oauth2:${token}@${host}/${GITEA_USER}/${REPO_NAME}.git"
+  else
+    echo "http://oauth2:${token}@${host}/${GITEA_USER}/${REPO_NAME}.git"
+  fi
+}
+
 push_remote() {
   local remote=$1
   local token=$2
@@ -75,12 +87,12 @@ push_remote() {
   fi
   echo "Pushing main and feature/smoke-1 -> ${remote}"
   if [[ -n "$token" && "$base_url" == http* ]]; then
-    local auth_url="${base_url#https://}"
-    auth_url="${auth_url#http://}"
-    git push "https://oauth2:${token}@${auth_url}/${GITEA_USER}/${REPO_NAME}.git" main \
+    local push_url
+    push_url="$(gitea_auth_push_url "$base_url" "$token")"
+    git push "$push_url" main \
       || echo "warn: push main to ${remote} failed" >&2
-    git push "https://oauth2:${token}@${auth_url}/${GITEA_USER}/${REPO_NAME}.git" feature/smoke-1 \
-      2>/dev/null || git push "https://oauth2:${token}@${auth_url}/${GITEA_USER}/${REPO_NAME}.git" feature/smoke-1 \
+    git push "$push_url" feature/smoke-1 \
+      2>/dev/null || git push "$push_url" feature/smoke-1 \
       || echo "warn: push feature/smoke-1 to ${remote} failed" >&2
     git branch -u "$remote/main" main 2>/dev/null || true
     return 0
