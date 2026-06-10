@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Quick pass/fail smoke for the forge in .remogram.json (no packet capture).
+# For saved packets and markdown comparison, use ./scripts/run-smoke-all.sh
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

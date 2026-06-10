@@ -1,0 +1,23 @@
+{
+  "head_sha": "7c807a4c2fde533314200fa644854ee1ef42101c",
+  "check_conclusion": "success",
+  "statuses": [
+    {
+      "context": "smoke",
+      "state": "success",
+      "description": "success"
+    },
+    {
+      "context": "pipeline:2590190460",
+      "state": "success",
+      "description": "success"
+    }
+  ],
+  "type": "pr_checks",
+  "schema_version": 1,
+  "provider_id": "gitlab-api",
+  "remote_name": "origin",
+  "repo_id": "attebury/remogram-smoke",
+  "observed_at": "2026-06-10T07:24:58.225Z",
+  "ok": true
+}

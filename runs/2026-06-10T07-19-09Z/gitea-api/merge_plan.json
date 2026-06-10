@@ -1,0 +1,15 @@
+{
+  "pr_number": 1,
+  "mergeability": "clean",
+  "checks_conclusion": "missing",
+  "blockers": [
+    "checks_missing"
+  ],
+  "type": "merge_plan",
+  "schema_version": 1,
+  "provider_id": "gitea-api",
+  "remote_name": "gitea-local",
+  "repo_id": "attebury/remogram-smoke",
+  "observed_at": "2026-06-10T07:19:14.821Z",
+  "ok": true
+}

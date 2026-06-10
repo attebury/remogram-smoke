@@ -41,6 +41,19 @@ Re-seed after resetting a forge:
 
 ## Smoke battery
 
+Capture packets for all forges (requires tokens in the environment):
+
+```bash
+export GITLAB_TOKEN=...
+export GITEA_TOKEN=...
+export GITHUB_TOKEN=...   # or GH_TOKEN
+./scripts/run-smoke-all.sh
+```
+
+This writes JSON packets under `runs/<timestamp>/`, renders `runs/<timestamp>/REPORT.md`, updates `SMOKE-RESULTS.md`, and sets `runs/latest`.
+
+Quick single-forge check (uses current `.remogram.json` only):
+
 ```bash
 ./scripts/smoke-commands.sh
 ```
@@ -59,7 +72,9 @@ remogram merge plan --number 1 --json
 
 On local Gitea without status posting, `check_conclusion: "missing"` is an expected forge fact.
 
-**Known limits:** GitHub `pr view` may return `oversized_raw_output` on real PRs until remogram raises the response byte cap (same dogfood issue as remogram PR #20).
+Compare runs visually via `SMOKE-RESULTS.md` or any `runs/*/REPORT.md` (summary tables + expandable full JSON per forge).
+
+**Historical note:** GitHub `pr view` returned `oversized_raw_output` before remogram GraphQL normalization (remogram PR #23); re-run `./scripts/run-smoke-all.sh` after upgrading remogram to confirm.
 
 ## GitLab push (source of truth)
 

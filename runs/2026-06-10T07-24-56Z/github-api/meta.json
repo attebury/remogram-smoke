@@ -1,0 +1,15 @@
+{
+  "provider": "github-api",
+  "remogram_config": {
+    "version": "1",
+    "provider": "github-api",
+    "remote": "github",
+    "owner": "attebury",
+    "repo": "remogram-smoke",
+    "trustedHosts": [
+      "github.com"
+    ]
+  },
+  "git_main": "a5156d5e050d0b21f082fd31ae24bf99caaa2c22",
+  "git_feature_smoke_1": "7c807a4c2fde533314200fa644854ee1ef42101c"
+}

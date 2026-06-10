@@ -1,3 +1,4 @@
 .remogram.json
 .DS_Store
 *.log
+runs/**/*.stderr
