@@ -1,0 +1,15 @@
+{
+  "forge_slug": "github-api",
+  "provider": "github-api",
+  "transport": "stdio",
+  "remogram_config": {
+    "version": "1",
+    "provider": "github-api",
+    "remote": "github",
+    "owner": "attebury",
+    "repo": "remogram-smoke",
+    "trustedHosts": [
+      "github.com"
+    ]
+  }
+}

@@ -17,6 +17,17 @@ COMMANDS = [
     ("merge_plan.json", "merge plan"),
 ]
 
+MCP_COMMANDS = [
+    ("doctor.json", "doctor"),
+    ("provider_capabilities.json", "provider capabilities"),
+    ("repo_status.json", "repo status"),
+    ("refs_compare.json", "ref compare"),
+    ("pr_status.json", "pr status"),
+    ("pr_checks.json", "pr checks"),
+    ("merge_plan.json", "merge plan"),
+    ("sync_plan.json", "sync plan"),
+]
+
 ENVELOPE_KEYS = [
     "type",
     "schema_version",
@@ -44,6 +55,23 @@ def load_json(path: Path) -> dict[str, Any] | None:
         return json.loads(path.read_text())
     except json.JSONDecodeError:
         return {"ok": False, "type": "invalid_json", "path": str(path)}
+
+
+def load_mcp_record(path: Path) -> tuple[dict[str, Any] | None, bool | None]:
+    raw = load_json(path)
+    if raw is None:
+        return None, None
+    if "packet" in raw:
+        return raw.get("packet"), raw.get("isError")
+    return raw, None
+
+
+def mcp_ok_cell(packet: dict[str, Any] | None, is_error: bool | None) -> str:
+    if packet is None:
+        return "—"
+    if is_error and packet.get("ok") is not False:
+        return "**fail** (mcp isError)"
+    return ok_cell(packet)
 
 
 def ok_cell(packet: dict[str, Any] | None) -> str:
@@ -92,10 +120,18 @@ def main() -> int:
         providers = sorted(p.name for p in run_dir.iterdir() if p.is_dir())
 
     packets: dict[str, dict[str, dict[str, Any] | None]] = {}
+    mcp_packets: dict[str, dict[str, dict[str, Any] | None]] = {}
+    mcp_errors: dict[str, dict[str, bool | None]] = {}
     for provider in providers:
         packets[provider] = {}
+        mcp_packets[provider] = {}
+        mcp_errors[provider] = {}
         for filename, _ in COMMANDS:
             packets[provider][filename] = load_json(run_dir / provider / filename)
+        for filename, _ in MCP_COMMANDS:
+            packet, is_error = load_mcp_record(run_dir / provider / "mcp" / filename)
+            mcp_packets[provider][filename] = packet
+            mcp_errors[provider][filename] = is_error
         if packets[provider].get("doctor.json") is None:
             packets[provider]["doctor.json"] = load_json(run_dir / provider / "skipped.json")
 
@@ -125,7 +161,23 @@ def main() -> int:
         lines.append("| " + " | ".join(row) + " |")
     lines.append("")
 
-    lines.append("## Envelope parity")
+    has_mcp = any((run_dir / p / "mcp").is_dir() for p in providers)
+    if has_mcp:
+        lines.append("## MCP battery summary (remogram-mcp stdio)")
+        lines.append("")
+        lines.append(header)
+        lines.append(sep)
+        for filename, label in MCP_COMMANDS:
+            row = [
+                label,
+            ] + [
+                mcp_ok_cell(mcp_packets[p].get(filename), mcp_errors[p].get(filename))
+                for p in providers
+            ]
+            lines.append("| " + " | ".join(row) + " |")
+        lines.append("")
+
+    lines.append("## Envelope parity (CLI)")
     lines.append("")
     for filename, label in COMMANDS:
         keys_present = any(packets[p].get(filename) for p in providers)
@@ -149,7 +201,7 @@ def main() -> int:
             lines.append("| " + " | ".join(row) + " |")
         lines.append("")
 
-    lines.append("## Full packets")
+    lines.append("## Full packets (CLI)")
     lines.append("")
     for filename, label in COMMANDS:
         lines.append(f"### {label}")
@@ -168,6 +220,31 @@ def main() -> int:
             lines.append("")
             lines.append("</details>")
             lines.append("")
+
+    if has_mcp:
+        lines.append("## Full MCP packets")
+        lines.append("")
+        for filename, label in MCP_COMMANDS:
+            lines.append(f"### MCP {label}")
+            lines.append("")
+            for provider in providers:
+                packet = mcp_packets[provider].get(filename)
+                is_error = mcp_errors[provider].get(filename)
+                lines.append("<details>")
+                lines.append(
+                    f"<summary><code>{provider}</code> — "
+                    f"{mcp_ok_cell(packet, is_error)}</summary>"
+                )
+                lines.append("")
+                lines.append("```json")
+                if packet is None:
+                    lines.append("{}")
+                else:
+                    lines.append(json.dumps(packet, indent=2, sort_keys=True))
+                lines.append("```")
+                lines.append("")
+                lines.append("</details>")
+                lines.append("")
 
     lines.append("## Links")
     lines.append("")

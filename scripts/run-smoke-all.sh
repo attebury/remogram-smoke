@@ -88,6 +88,7 @@ PY
   map_gitea_token "$token_var"
   export FORGE_SLUG="$slug"
   "$ROOT/scripts/capture-forge-smoke.sh" "$RUN_DIR"
+  "$ROOT/scripts/capture-forge-mcp-smoke.sh" "$RUN_DIR"
   restore_gitea_token
   unset FORGE_SLUG
 done

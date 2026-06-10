@@ -1,0 +1,16 @@
+{
+  "forge_slug": "gitlab-api",
+  "provider": "gitlab-api",
+  "remogram_config": {
+    "version": "1",
+    "provider": "gitlab-api",
+    "remote": "origin",
+    "owner": "attebury",
+    "repo": "remogram-smoke",
+    "trustedHosts": [
+      "gitlab.com"
+    ]
+  },
+  "git_main": "1093e5d7a0c9949a2cecb1313ac331a4b802c8ab",
+  "git_feature_smoke_1": "7c807a4c2fde533314200fa644854ee1ef42101c"
+}

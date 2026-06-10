@@ -54,7 +54,9 @@ export GITHUB_TOKEN=...         # or GH_TOKEN
 
 Forges without a token are skipped (recorded in the report). **Both Gitea hosts use the same `gitea-api` provider**, which always reads `GITEA_TOKEN`; the smoke runner maps `GITEA_COM_TOKEN` → `GITEA_TOKEN` only for the `gitea-com` capture pass.
 
-This writes JSON packets under `runs/<timestamp>/`, renders `runs/<timestamp>/REPORT.md`, updates `SMOKE-RESULTS.md`, and sets `runs/latest`.
+This writes JSON packets under `runs/<timestamp>/` (CLI + `mcp/` subdir per forge), renders `runs/<timestamp>/REPORT.md`, updates `SMOKE-RESULTS.md`, and sets `runs/latest`.
+
+Requires linked remogram checkout at `~/Documents/remogram` (or set `REMOGRAM_ROOT`) for MCP capture.
 
 Quick single-forge check (uses current `.remogram.json` only):
 

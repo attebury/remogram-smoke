@@ -1,0 +1,20 @@
+{
+  "tool": "sync_plan",
+  "isError": false,
+  "packet": {
+    "remote": "gitea-com",
+    "local_sha": "1093e5d7a0c9949a2cecb1313ac331a4b802c8ab",
+    "remote_sha": "9101c7917f66e07de52c7f47150dcdc5644f5240",
+    "diverged": true,
+    "blockers": [
+      "divergent_remotes"
+    ],
+    "type": "sync_plan",
+    "schema_version": 1,
+    "provider_id": "gitea-api",
+    "remote_name": "gitea-com",
+    "repo_id": "attebury/remogram-smoke",
+    "observed_at": "2026-06-10T07:44:02.400Z",
+    "ok": true
+  }
+}

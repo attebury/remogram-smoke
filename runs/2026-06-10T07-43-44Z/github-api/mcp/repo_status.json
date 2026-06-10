@@ -1,0 +1,24 @@
+{
+  "tool": "repo_status",
+  "isError": false,
+  "packet": {
+    "auth_present": true,
+    "auth_env": "GITHUB_TOKEN",
+    "capabilities": [
+      "repo_status",
+      "ref_compare",
+      "pr_status",
+      "pr_checks",
+      "merge_plan",
+      "sync_plan"
+    ],
+    "default_branch": "main",
+    "type": "repo_status",
+    "schema_version": 1,
+    "provider_id": "github-api",
+    "remote_name": "github",
+    "repo_id": "attebury/remogram-smoke",
+    "observed_at": "2026-06-10T07:44:07.186Z",
+    "ok": true
+  }
+}
