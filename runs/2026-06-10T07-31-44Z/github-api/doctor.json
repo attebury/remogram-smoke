@@ -1,0 +1,115 @@
+{
+  "summary": "pass",
+  "checks": [
+    {
+      "name": "config",
+      "status": "pass",
+      "message": ".remogram.json is present and valid"
+    },
+    {
+      "name": "provider",
+      "status": "pass",
+      "message": "github-api is registered"
+    },
+    {
+      "name": "capabilities",
+      "status": "pass",
+      "message": "Provider capabilities are available"
+    },
+    {
+      "name": "remote",
+      "status": "pass",
+      "message": "Git remote URL parses successfully",
+      "details": {
+        "host": "github.com",
+        "owner": "attebury",
+        "repo": "remogram-smoke"
+      }
+    },
+    {
+      "name": "repo_match",
+      "status": "pass",
+      "message": "Config owner/repo matches git remote"
+    },
+    {
+      "name": "host_binding",
+      "status": "pass",
+      "message": "Configured host binding is trusted"
+    },
+    {
+      "name": "auth",
+      "status": "pass",
+      "message": "GITHUB_TOKEN is present",
+      "details": {
+        "env_names": [
+          "GITHUB_TOKEN",
+          "GH_TOKEN"
+        ],
+        "present_env": "GITHUB_TOKEN"
+      }
+    },
+    {
+      "name": "checks",
+      "status": "pass",
+      "message": "Provider reports forge check sources",
+      "details": {
+        "sources": [
+          "commit_statuses",
+          "check_runs"
+        ]
+      }
+    },
+    {
+      "name": "api_reachability",
+      "status": "skipped",
+      "message": "Live API reachability is not checked by default"
+    }
+  ],
+  "provider_capabilities": {
+    "commands": [
+      {
+        "name": "repo_status",
+        "implemented": true
+      },
+      {
+        "name": "ref_compare",
+        "implemented": true
+      },
+      {
+        "name": "pr_status",
+        "implemented": true
+      },
+      {
+        "name": "pr_checks",
+        "implemented": true
+      },
+      {
+        "name": "merge_plan",
+        "implemented": true
+      },
+      {
+        "name": "sync_plan",
+        "implemented": true
+      }
+    ],
+    "auth_envs": [
+      "GITHUB_TOKEN",
+      "GH_TOKEN"
+    ],
+    "check_sources": [
+      "commit_statuses",
+      "check_runs"
+    ],
+    "mergeability_confidence": "derived",
+    "host_binding": "verified_remote_host",
+    "pagination": "first_page_only",
+    "write_support": false
+  },
+  "type": "provider_doctor",
+  "schema_version": 1,
+  "provider_id": "github-api",
+  "remote_name": "github",
+  "repo_id": "attebury/remogram-smoke",
+  "observed_at": "2026-06-10T07:31:52.151Z",
+  "ok": true
+}

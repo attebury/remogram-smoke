@@ -1,0 +1,18 @@
+{
+  "pr_number": 1,
+  "url": "https://gitlab.com/attebury/remogram-smoke/-/merge_requests/1",
+  "title": "Smoke fixture MR",
+  "state": "open",
+  "base_ref": "main",
+  "base_sha": "a5156d5e050d0b21f082fd31ae24bf99caaa2c22",
+  "head_ref": "feature/smoke-1",
+  "head_sha": "7c807a4c2fde533314200fa644854ee1ef42101c",
+  "mergeability": "clean",
+  "type": "pr_status",
+  "schema_version": 1,
+  "provider_id": "gitlab-api",
+  "remote_name": "origin",
+  "repo_id": "attebury/remogram-smoke",
+  "observed_at": "2026-06-10T07:31:11.608Z",
+  "ok": true
+}

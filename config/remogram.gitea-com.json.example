@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "provider": "gitea-api",
+  "remote": "gitea-com",
+  "owner": "attebury",
+  "repo": "remogram-smoke",
+  "baseUrl": "https://gitea.com",
+  "trustedHosts": ["gitea.com"]
+}

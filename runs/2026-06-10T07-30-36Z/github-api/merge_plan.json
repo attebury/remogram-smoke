@@ -1,0 +1,16 @@
+{
+  "pr_number": 1,
+  "mergeability": "unknown",
+  "checks_conclusion": "missing",
+  "blockers": [
+    "pr_not_open",
+    "checks_missing"
+  ],
+  "type": "merge_plan",
+  "schema_version": 1,
+  "provider_id": "github-api",
+  "remote_name": "github",
+  "repo_id": "attebury/remogram-smoke",
+  "observed_at": "2026-06-10T07:30:47.657Z",
+  "ok": true
+}

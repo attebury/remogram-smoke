@@ -15,7 +15,8 @@ runs/2026-06-10T12-00-00Z/
     pr_checks.json
     merge_plan.json
     meta.json
-  gitea-api/
+  gitea-local/
+  gitea-com/
   github-api/
 ```
 

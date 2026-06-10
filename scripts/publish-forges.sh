@@ -5,28 +5,40 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
 GITEA_URL="${GITEA_URL:-http://localhost:3000}"
+GITEA_COM_URL="${GITEA_COM_URL:-https://gitea.com}"
 GITEA_USER="${GITEA_USER:-attebury}"
 GITHUB_OWNER="${GITHUB_OWNER:-attebury}"
 REPO_NAME="${REPO_NAME:-remogram-smoke}"
 
 ensure_gitea_repo() {
-  if [[ -z "${GITEA_TOKEN:-}" ]]; then
-    echo "GITEA_TOKEN not set; skipping Gitea create" >&2
+  local api_url="$1"
+  local token="$2"
+  local label="$3"
+  if [[ -z "$token" ]]; then
+    echo "${label}: token not set; skipping" >&2
     return 1
   fi
   local code
   code="$(curl -s -o /dev/null -w '%{http_code}' \
-    -H "Authorization: token ${GITEA_TOKEN}" \
-    "${GITEA_URL}/api/v1/repos/${GITEA_USER}/${REPO_NAME}")"
+    -H "Authorization: token ${token}" \
+    "${api_url}/api/v1/repos/${GITEA_USER}/${REPO_NAME}")"
   if [[ "$code" == "200" ]]; then
-    echo "Gitea repo ${GITEA_USER}/${REPO_NAME} exists"
+    echo "${label} repo ${GITEA_USER}/${REPO_NAME} exists"
     return 0
   fi
   curl -s -X POST \
-    -H "Authorization: token ${GITEA_TOKEN}" \
+    -H "Authorization: token ${token}" \
     -H "Content-Type: application/json" \
     -d "{\"name\":\"${REPO_NAME}\",\"private\":false,\"auto_init\":false}" \
-    "${GITEA_URL}/api/v1/user/repos" | python3 -c "import json,sys; d=json.load(sys.stdin); print('created', d.get('full_name', d.get('message')))"
+    "${api_url}/api/v1/user/repos" | python3 -c "import json,sys; d=json.load(sys.stdin); print('created', d.get('full_name', d.get('message')))"
+}
+
+ensure_gitea_repo_local() {
+  ensure_gitea_repo "$GITEA_URL" "${GITEA_TOKEN:-}" "Gitea local"
+}
+
+ensure_gitea_repo_com() {
+  ensure_gitea_repo "$GITEA_COM_URL" "${GITEA_COM_TOKEN:-}" "Gitea.com"
 }
 
 ensure_github_repo() {
@@ -46,13 +58,41 @@ add_remote_once() {
   fi
 }
 
-ensure_gitea_repo || true
+ensure_gitea_repo_local || true
+ensure_gitea_repo_com || true
 ensure_github_repo
 
 add_remote_once gitea-local "${GITEA_URL}/${GITEA_USER}/${REPO_NAME}.git"
+add_remote_once gitea-com "${GITEA_COM_URL}/${GITEA_USER}/${REPO_NAME}.git"
 add_remote_once github "https://github.com/${GITHUB_OWNER}/${REPO_NAME}.git"
 
-for remote in gitea-local github origin; do
+push_remote() {
+  local remote=$1
+  local token=$2
+  local base_url=$3
+  if ! git remote get-url "$remote" >/dev/null 2>&1; then
+    return 0
+  fi
+  echo "Pushing main and feature/smoke-1 -> ${remote}"
+  if [[ -n "$token" && "$base_url" == http* ]]; then
+    local auth_url="${base_url#https://}"
+    auth_url="${auth_url#http://}"
+    git push "https://oauth2:${token}@${auth_url}/${GITEA_USER}/${REPO_NAME}.git" main \
+      || echo "warn: push main to ${remote} failed" >&2
+    git push "https://oauth2:${token}@${auth_url}/${GITEA_USER}/${REPO_NAME}.git" feature/smoke-1 \
+      2>/dev/null || git push "https://oauth2:${token}@${auth_url}/${GITEA_USER}/${REPO_NAME}.git" feature/smoke-1 \
+      || echo "warn: push feature/smoke-1 to ${remote} failed" >&2
+    git branch -u "$remote/main" main 2>/dev/null || true
+    return 0
+  fi
+  git push -u "$remote" main || echo "warn: push main to ${remote} failed" >&2
+  git push -u "$remote" feature/smoke-1 2>/dev/null || git push "$remote" feature/smoke-1 || echo "warn: push feature/smoke-1 to ${remote} failed" >&2
+}
+
+push_remote gitea-local "${GITEA_TOKEN:-}" "$GITEA_URL"
+push_remote gitea-com "${GITEA_COM_TOKEN:-}" "$GITEA_COM_URL"
+
+for remote in github origin; do
   if git remote get-url "$remote" >/dev/null 2>&1; then
     echo "Pushing main and feature/smoke-1 -> ${remote}"
     git push -u "$remote" main || echo "warn: push main to ${remote} failed" >&2

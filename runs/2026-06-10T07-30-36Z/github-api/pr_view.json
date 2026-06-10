@@ -1,0 +1,18 @@
+{
+  "pr_number": 1,
+  "url": "https://github.com/attebury/remogram-smoke/pull/1",
+  "title": "Smoke fixture PR",
+  "state": "merged",
+  "base_ref": "main",
+  "base_sha": "046afc4e6e18d0d7ad69e0b1392720298051b236",
+  "head_ref": "feature/smoke-1",
+  "head_sha": "093a190b9703f66a10c31db96f3567814d6eecf9",
+  "mergeability": "unknown",
+  "type": "pr_status",
+  "schema_version": 1,
+  "provider_id": "github-api",
+  "remote_name": "github",
+  "repo_id": "attebury/remogram-smoke",
+  "observed_at": "2026-06-10T07:30:45.293Z",
+  "ok": true
+}

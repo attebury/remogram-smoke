@@ -1,0 +1,17 @@
+{
+  "forge_slug": "gitea-com",
+  "provider": "gitea-api",
+  "remogram_config": {
+    "version": "1",
+    "provider": "gitea-api",
+    "remote": "gitea-com",
+    "owner": "attebury",
+    "repo": "remogram-smoke",
+    "baseUrl": "https://gitea.com",
+    "trustedHosts": [
+      "gitea.com"
+    ]
+  },
+  "git_main": "431bc234586fbddb26eb0e21550a7b8fc416ed22",
+  "git_feature_smoke_1": "7c807a4c2fde533314200fa644854ee1ef42101c"
+}

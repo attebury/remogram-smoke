@@ -1,0 +1,9 @@
+{
+  "run_id": "2026-06-10T07-31-44Z",
+  "started_at": "2026-06-10T07:31:44Z",
+  "fixture": {
+    "main": "431bc234586fbddb26eb0e21550a7b8fc416ed22",
+    "feature_smoke_1": "7c807a4c2fde533314200fa644854ee1ef42101c"
+  },
+  "remogram_version": null
+}

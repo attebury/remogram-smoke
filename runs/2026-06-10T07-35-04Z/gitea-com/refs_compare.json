@@ -1,0 +1,15 @@
+{
+  "base_ref": "main",
+  "base_sha": "431bc234586fbddb26eb0e21550a7b8fc416ed22",
+  "head_ref": "feature/smoke-1",
+  "head_sha": "7c807a4c2fde533314200fa644854ee1ef42101c",
+  "ahead_by": 1,
+  "behind_by": 1,
+  "type": "ref_compare",
+  "schema_version": 1,
+  "provider_id": "gitea-api",
+  "remote_name": "gitea-com",
+  "repo_id": "attebury/remogram-smoke",
+  "observed_at": "2026-06-10T07:35:10.304Z",
+  "ok": true
+}

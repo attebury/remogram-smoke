@@ -1,0 +1,12 @@
+{
+  "head_sha": "093a190b9703f66a10c31db96f3567814d6eecf9",
+  "check_conclusion": "missing",
+  "statuses": [],
+  "type": "pr_checks",
+  "schema_version": 1,
+  "provider_id": "github-api",
+  "remote_name": "github",
+  "repo_id": "attebury/remogram-smoke",
+  "observed_at": "2026-06-10T07:31:54.491Z",
+  "ok": true
+}

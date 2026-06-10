@@ -17,7 +17,8 @@ if [[ ! -f .remogram.json ]]; then
 fi
 
 PROVIDER="$(python3 -c "import json; print(json.load(open('.remogram.json'))['provider'])")"
-OUT="$RUN_DIR/$PROVIDER"
+FORGE_SLUG="${FORGE_SLUG:-$PROVIDER}"
+OUT="$RUN_DIR/$FORGE_SLUG"
 mkdir -p "$OUT"
 
 capture() {
@@ -44,6 +45,7 @@ capture merge_plan.json merge plan --number 1
 python3 - <<PY
 import json, pathlib
 meta = {
+  "forge_slug": "$FORGE_SLUG",
   "provider": "$PROVIDER",
   "remogram_config": json.load(open(".remogram.json")),
   "git_main": "$(git rev-parse main 2>/dev/null || echo null)",
@@ -52,4 +54,4 @@ meta = {
 pathlib.Path("$OUT/meta.json").write_text(json.dumps(meta, indent=2) + "\n")
 PY
 
-echo "Captured $PROVIDER -> $OUT"
+echo "Captured $FORGE_SLUG ($PROVIDER) -> $OUT"

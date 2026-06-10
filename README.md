@@ -6,13 +6,14 @@ Minimal cross-forge fixture repo for live **remogram** v1 smoke tests (read/plan
 
 ## Forges
 
-| Remote | Forge | Provider |
-|--------|-------|----------|
-| `origin` | gitlab.com | `gitlab-api` |
-| `gitea-local` | localhost Gitea | `gitea-api` |
-| `github` | github.com | `github-api` |
+| Remote | Forge | Provider | Smoke slug |
+|--------|-------|----------|--------------|
+| `origin` | gitlab.com | `gitlab-api` | `gitlab-api` |
+| `gitea-local` | localhost Gitea | `gitea-api` | `gitea-local` |
+| `gitea-com` | gitea.com | `gitea-api` | `gitea-com` |
+| `github` | github.com | `github-api` | `github-api` |
 
-Create gitea.com mirror manually if needed; use the same layout as `gitea-local` with your hosted base URL.
+Create a `gitea.com` mirror manually or run `./scripts/publish-forges.sh` with `GITEA_COM_TOKEN` set (see below). Use the same layout as `gitea-local` with your hosted base URL.
 
 ## Bootstrap
 
@@ -45,10 +46,13 @@ Capture packets for all forges (requires tokens in the environment):
 
 ```bash
 export GITLAB_TOKEN=...
-export GITEA_TOKEN=...
-export GITHUB_TOKEN=...   # or GH_TOKEN
+export GITEA_TOKEN=...          # local Gitea (localhost:3000)
+export GITEA_COM_TOKEN=...      # gitea.com (optional fourth forge)
+export GITHUB_TOKEN=...         # or GH_TOKEN
 ./scripts/run-smoke-all.sh
 ```
+
+Forges without a token are skipped (recorded in the report). **Both Gitea hosts use the same `gitea-api` provider**, which always reads `GITEA_TOKEN`; the smoke runner maps `GITEA_COM_TOKEN` → `GITEA_TOKEN` only for the `gitea-com` capture pass.
 
 This writes JSON packets under `runs/<timestamp>/`, renders `runs/<timestamp>/REPORT.md`, updates `SMOKE-RESULTS.md`, and sets `runs/latest`.
 
@@ -90,10 +94,24 @@ Then open MR !1: `feature/smoke-1` → `main` in GitLab UI, or use the API with 
 
 ## Auth
 
-| Provider | Environment variable |
-|----------|---------------------|
-| `gitlab-api` | `GITLAB_TOKEN` |
-| `gitea-api` | `GITEA_TOKEN` |
-| `github-api` | `GITHUB_TOKEN` or `GH_TOKEN` |
+| Provider | Environment variable | Host |
+|----------|---------------------|------|
+| `gitlab-api` | `GITLAB_TOKEN` | gitlab.com |
+| `gitea-api` (local) | `GITEA_TOKEN` | `baseUrl` in `config/remogram.gitea-local.json.example` |
+| `gitea-api` (gitea.com) | `GITEA_COM_TOKEN` | `https://gitea.com` — mapped to `GITEA_TOKEN` at capture time |
+| `github-api` | `GITHUB_TOKEN` or `GH_TOKEN` | github.com |
 
 See `config/*.example` for per-forge `.remogram.json` templates.
+
+### gitea.com bootstrap
+
+1. Create `attebury/remogram-smoke` on gitea.com (or your account path).
+2. Add git remote: `git remote add gitea-com https://gitea.com/attebury/remogram-smoke.git`
+3. Push branches and open PR #1 (`feature/smoke-1` → `main`):
+
+```bash
+export GITEA_COM_TOKEN=...
+GITEA_COM_URL=https://gitea.com ./scripts/publish-forges.sh
+```
+
+4. Add `GITEA_COM_TOKEN` to your shell (e.g. `~/.zshrc`) alongside `GITEA_TOKEN`.
