@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "provider": "gitea-api",
+  "remote": "gitea-local",
+  "owner": "attebury",
+  "repo": "remogram-smoke",
+  "baseUrl": "http://localhost:3000",
+  "trustedHosts": ["localhost:3000", "127.0.0.1:3000"]
+}

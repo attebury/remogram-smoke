@@ -1,0 +1,8 @@
+{
+  "version": "1",
+  "provider": "gitlab-api",
+  "remote": "origin",
+  "owner": "attebury",
+  "repo": "remogram-smoke",
+  "trustedHosts": ["gitlab.com"]
+}

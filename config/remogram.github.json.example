@@ -1,0 +1,8 @@
+{
+  "version": "1",
+  "provider": "github-api",
+  "remote": "github",
+  "owner": "attebury",
+  "repo": "remogram-smoke",
+  "trustedHosts": ["github.com"]
+}
