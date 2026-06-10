@@ -1,0 +1,2 @@
+remogram-smoke fixture v1
+smoke branch 2026-06-10T06:26:50Z
