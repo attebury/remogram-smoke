@@ -95,7 +95,9 @@ export REMOGRAM_OPERATOR_CONFIG=$HOME/.config/remogram-smoke/github-writes.opera
 REMOGRAM_SMOKE_GITHUB_WRITES=1 ./scripts/smoke-github-writes.sh
 ```
 
-Create a fine-grained or classic PAT with **Issues: read/write** on `attebury/remogram-smoke` only. Do not commit the token; Remogram reads `GITHUB_TOKEN` from the environment only (never from `.remogram.json`).
+Create a fine-grained or classic PAT with **Issues: Read and write** on `attebury/remogram-smoke` only (**Read is required** for `issue_open` idempotency scan and `issue view`; write-only fails with `Resource not accessible by personal access token`). Do not commit the token; Remogram reads `GITHUB_TOKEN` from the environment only (never from `.remogram.json`).
+
+If smoke fails with HTTP 403 on Issues, edit the token at https://github.com/settings/personal-access-tokens → **Repository permissions → Issues: Read and write**.
 
 Packets land under `runs/<timestamp>/github-api-writes/`. Requires remogram with github-api Tier B writes (beta.16+). `cr_open` / `merge execute` live smoke is intentionally out of scope here — those need branch setup and would disturb open PR #1.
 
