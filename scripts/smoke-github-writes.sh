@@ -5,12 +5,13 @@
 #
 # Prerequisites:
 #   - remogram on PATH with github-api Tier B writes (beta.16+), or set REMOGRAM_BIN
-#   - GITHUB_TOKEN, GH_TOKEN, or `gh auth login` (script uses `gh auth token` as fallback)
+#   - export GITHUB_TOKEN=... (repo scope on attebury/remogram-smoke) — same pattern as GITEA_TOKEN
+#   - export REMOGRAM_OPERATOR_CONFIG=... (bound write_commands overlay — same pattern as dogfood)
 #   - cp config/remogram.github.json.example .remogram.json
 #   - cp config/remogram.github-writes.operator.json.example ~/.config/remogram-smoke/github-writes.operator.json
-#     (or set REMOGRAM_OPERATOR_CONFIG to your copy)
 #
 # Usage:
+#   export GITHUB_TOKEN=...   # or GH_TOKEN (see run-smoke-all.sh)
 #   export REMOGRAM_OPERATOR_CONFIG=$HOME/.config/remogram-smoke/github-writes.operator.json
 #   REMOGRAM_SMOKE_GITHUB_WRITES=1 ./scripts/smoke-github-writes.sh
 #
@@ -26,15 +27,16 @@ if [[ "${REMOGRAM_SMOKE_GITHUB_WRITES:-}" != "1" ]]; then
   exit 1
 fi
 
-if [[ -z "${GITHUB_TOKEN:-}" && -z "${GH_TOKEN:-}" ]]; then
-  if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
-    export GITHUB_TOKEN="$(gh auth token)"
-  else
-    echo "GITHUB_TOKEN, GH_TOKEN, or gh auth login required" >&2
-    exit 1
-  fi
+if [[ -z "${GITHUB_TOKEN:-}" && -n "${GH_TOKEN:-}" ]]; then
+  export GITHUB_TOKEN="$GH_TOKEN"
 fi
-export GITHUB_TOKEN="${GITHUB_TOKEN:-${GH_TOKEN:-}}"
+if [[ -z "${GITHUB_TOKEN:-}" ]]; then
+  echo "GITHUB_TOKEN not set (repo scope PAT on attebury/remogram-smoke)." >&2
+  echo "Same pattern as GITEA_TOKEN for read smoke — add to your shell, e.g. ~/.zshrc:" >&2
+  echo "  export GITHUB_TOKEN=ghp_..." >&2
+  echo "GH_TOKEN is also accepted (mapped to GITHUB_TOKEN)." >&2
+  exit 1
+fi
 
 if [[ -z "${REMOGRAM_BIN:-}" ]]; then
   for candidate in \

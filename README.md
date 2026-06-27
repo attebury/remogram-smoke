@@ -84,13 +84,18 @@ On local Gitea without status posting, `check_conclusion: "missing"` is an expec
 
 Live proof for `issue_open`, `issue_comment`, and `issue_close` against the GitHub mirror. **Mutates forge state** (opens then closes a disposable issue). Never run in CI unless you intend to write to GitHub.
 
+Same two-part setup as Gitea dogfood writes: **forge token in the environment** plus a **bound operator overlay** for `write_commands`.
+
 ```bash
 cp config/remogram.github.json.example .remogram.json
 cp config/remogram.github-writes.operator.json.example ~/.config/remogram-smoke/github-writes.operator.json
-export GITHUB_TOKEN=...   # repo scope on attebury/remogram-smoke
+
+export GITHUB_TOKEN=...   # repo scope on attebury/remogram-smoke (add to ~/.zshrc like GITEA_TOKEN)
 export REMOGRAM_OPERATOR_CONFIG=$HOME/.config/remogram-smoke/github-writes.operator.json
 REMOGRAM_SMOKE_GITHUB_WRITES=1 ./scripts/smoke-github-writes.sh
 ```
+
+Create a fine-grained or classic PAT with **Issues: read/write** on `attebury/remogram-smoke` only. Do not commit the token; Remogram reads `GITHUB_TOKEN` from the environment only (never from `.remogram.json`).
 
 Packets land under `runs/<timestamp>/github-api-writes/`. Requires remogram with github-api Tier B writes (beta.16+). `cr_open` / `merge execute` live smoke is intentionally out of scope here — those need branch setup and would disturb open PR #1.
 
@@ -118,6 +123,8 @@ Then open MR !1: `feature/smoke-1` → `main` in GitLab UI, or use the API with 
 | `gitea-api` (local) | `GITEA_TOKEN` | `baseUrl` in `config/remogram.gitea-local.json.example` |
 | `gitea-api` (gitea.com) | `GITEA_COM_TOKEN` | `https://gitea.com` — mapped to `GITEA_TOKEN` at capture time |
 | `github-api` | `GITHUB_TOKEN` or `GH_TOKEN` | github.com |
+
+**Write smoke (GitHub):** `GITHUB_TOKEN` + `REMOGRAM_OPERATOR_CONFIG` (see [GitHub Tier B write smoke](#github-tier-b-write-smoke-opt-in)). **Dogfood writes (Gitea):** `GITEA_TOKEN` + `REMOGRAM_OPERATOR_CONFIG` — same split: token proves API auth, operator overlay opts in to write ids.
 
 See `config/*.example` for per-forge `.remogram.json` templates.
 
