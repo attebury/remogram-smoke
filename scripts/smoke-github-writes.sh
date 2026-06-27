@@ -74,8 +74,7 @@ echo "GitHub write smoke -> $RUN_DIR"
 echo "Title: $SMOKE_TITLE"
 
 capture write_preview_issue_open.json write preview --kind issue_open \
-  --title "$SMOKE_TITLE" --body "Disposable smoke issue (${RUN_TAG})." \
-  --dedupe-key "$DEDUPE_KEY" --dedupe-check
+  --title "$SMOKE_TITLE" --body "Disposable smoke issue (${RUN_TAG})."
 
 capture issue_open.json issue open \
   --title "$SMOKE_TITLE" \
