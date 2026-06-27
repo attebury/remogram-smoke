@@ -1,0 +1,18 @@
+{
+  "version": "1",
+  "bind": {
+    "provider": "github-api",
+    "remote": "github",
+    "owner": "attebury",
+    "repo": "remogram-smoke",
+    "baseUrl": "https://github.com"
+  },
+  "write_commands": [
+    "issue_open",
+    "issue_close",
+    "issue_comment"
+  ],
+  "forge_write_policy": {
+    "field_max_bytes": null
+  }
+}

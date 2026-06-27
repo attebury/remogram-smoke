@@ -1,6 +1,6 @@
 # remogram-smoke
 
-Minimal cross-forge fixture repo for live **Remogram** v1 smoke tests (read/plan commands only).
+Minimal cross-forge fixture repo for live **Remogram** smoke tests (read/plan commands by default; optional Tier B write smoke on GitHub).
 
 **Source of truth:** GitLab (`origin`). Other forges are mirrors of the same git content.
 
@@ -79,6 +79,20 @@ remogram merge plan --number 1 --json
 ```
 
 On local Gitea without status posting, `check_conclusion: "missing"` is an expected forge fact.
+
+### GitHub Tier B write smoke (opt-in)
+
+Live proof for `issue_open`, `issue_comment`, and `issue_close` against the GitHub mirror. **Mutates forge state** (opens then closes a disposable issue). Never run in CI unless you intend to write to GitHub.
+
+```bash
+cp config/remogram.github.json.example .remogram.json
+cp config/remogram.github-writes.operator.json.example ~/.config/remogram-smoke/github-writes.operator.json
+export GITHUB_TOKEN=...   # repo scope on attebury/remogram-smoke
+export REMOGRAM_OPERATOR_CONFIG=$HOME/.config/remogram-smoke/github-writes.operator.json
+REMOGRAM_SMOKE_GITHUB_WRITES=1 ./scripts/smoke-github-writes.sh
+```
+
+Packets land under `runs/<timestamp>/github-api-writes/`. Requires remogram with github-api Tier B writes (beta.16+). `cr_open` / `merge execute` live smoke is intentionally out of scope here — those need branch setup and would disturb open PR #1.
 
 Compare runs visually via `SMOKE-RESULTS.md` or any `runs/*/REPORT.md` (summary tables + expandable full JSON per forge).
 
