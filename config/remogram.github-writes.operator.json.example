@@ -4,8 +4,7 @@
     "provider": "github-api",
     "remote": "github",
     "owner": "attebury",
-    "repo": "remogram-smoke",
-    "baseUrl": "https://github.com"
+    "repo": "remogram-smoke"
   },
   "write_commands": [
     "issue_open",

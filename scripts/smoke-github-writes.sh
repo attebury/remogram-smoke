@@ -4,14 +4,13 @@
 # Mutates forge state (opens then closes a disposable issue). Never run in CI by default.
 #
 # Prerequisites:
-#   - remogram on PATH (beta with github-api Tier B writes)
-#   - GITHUB_TOKEN or GH_TOKEN with repo scope on attebury/remogram-smoke
+#   - remogram on PATH with github-api Tier B writes (beta.16+), or set REMOGRAM_BIN
+#   - GITHUB_TOKEN, GH_TOKEN, or `gh auth login` (script uses `gh auth token` as fallback)
 #   - cp config/remogram.github.json.example .remogram.json
 #   - cp config/remogram.github-writes.operator.json.example ~/.config/remogram-smoke/github-writes.operator.json
 #     (or set REMOGRAM_OPERATOR_CONFIG to your copy)
 #
 # Usage:
-#   export GITHUB_TOKEN=...
 #   export REMOGRAM_OPERATOR_CONFIG=$HOME/.config/remogram-smoke/github-writes.operator.json
 #   REMOGRAM_SMOKE_GITHUB_WRITES=1 ./scripts/smoke-github-writes.sh
 #
@@ -28,10 +27,33 @@ if [[ "${REMOGRAM_SMOKE_GITHUB_WRITES:-}" != "1" ]]; then
 fi
 
 if [[ -z "${GITHUB_TOKEN:-}" && -z "${GH_TOKEN:-}" ]]; then
-  echo "GITHUB_TOKEN or GH_TOKEN required" >&2
-  exit 1
+  if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
+    export GITHUB_TOKEN="$(gh auth token)"
+  else
+    echo "GITHUB_TOKEN, GH_TOKEN, or gh auth login required" >&2
+    exit 1
+  fi
 fi
 export GITHUB_TOKEN="${GITHUB_TOKEN:-${GH_TOKEN:-}}"
+
+if [[ -z "${REMOGRAM_BIN:-}" ]]; then
+  for candidate in \
+    "$HOME/Documents/lanes/remogram/implement/packages/remogram-cli/bin/remogram.js" \
+    "$HOME/Documents/remogram/packages/remogram-cli/bin/remogram.js"; do
+    if [[ -f "$candidate" ]]; then
+      export REMOGRAM_BIN="$candidate"
+      break
+    fi
+  done
+fi
+
+remogram() {
+  if [[ -n "${REMOGRAM_BIN:-}" && -f "$REMOGRAM_BIN" ]]; then
+    node "$REMOGRAM_BIN" "$@"
+  else
+    command remogram "$@"
+  fi
+}
 
 if [[ -z "${REMOGRAM_OPERATOR_CONFIG:-}" ]]; then
   echo "REMOGRAM_OPERATOR_CONFIG required (see config/remogram.github-writes.operator.json.example)" >&2
@@ -84,12 +106,26 @@ capture issue_open.json issue open \
 ISSUE_NUMBER="$(python3 -c "import json; print(json.load(open('$RUN_DIR/issue_open.json'))['issue_number'])")"
 echo "Opened issue #$ISSUE_NUMBER"
 
-capture issue_open_reuse.json issue open \
-  --title "$SMOKE_TITLE" \
-  --body "Disposable smoke issue (${RUN_TAG})." \
-  --idempotency-key "$DEDUPE_KEY"
-
-python3 -c "import json; d=json.load(open('$RUN_DIR/issue_open_reuse.json')); assert d.get('reused_existing') is True, d"
+# GitHub open-issue list can lag after create; retry title idempotency before failing.
+reuse_ok=false
+for attempt in 1 2 3 4 5; do
+  capture issue_open_reuse.json issue open \
+    --title "$SMOKE_TITLE" \
+    --body "Disposable smoke issue (${RUN_TAG})." \
+    --idempotency-key "$DEDUPE_KEY"
+  if python3 -c "import json; d=json.load(open('$RUN_DIR/issue_open_reuse.json')); assert d.get('reused_existing') is True, d"; then
+    reuse_ok=true
+    break
+  fi
+  if [[ "$attempt" -lt 5 ]]; then
+    echo "Title idempotency not visible yet (attempt $attempt/5); waiting..." >&2
+    sleep 2
+  fi
+done
+if [[ "$reuse_ok" != true ]]; then
+  echo "issue_open title idempotency failed after retries" >&2
+  exit 1
+fi
 
 capture issue_comment.json issue comment \
   --number "$ISSUE_NUMBER" \
@@ -125,3 +161,21 @@ PY
 echo ""
 echo "GitHub Tier B write smoke passed (issue #$ISSUE_NUMBER opened, commented, closed)."
 echo "Packets: $RUN_DIR"
+
+# Close duplicate opens from GitHub list lag during idempotency retries (if any).
+python3 - <<PY
+import json, os, subprocess, sys
+run_dir = "$RUN_DIR"
+title = "$SMOKE_TITLE"
+primary = int("$ISSUE_NUMBER")
+with open(os.path.join(run_dir, "issue_open_reuse.json")) as f:
+    reuse = json.load(f)
+extra = reuse.get("issue_number")
+if isinstance(extra, int) and extra != primary and reuse.get("created"):
+    subprocess.run(
+        ["node", os.environ.get("REMOGRAM_BIN", "remogram"), "issue", "close", "--number", str(extra), "--json"],
+        check=False,
+        env=os.environ,
+    )
+    print(f"Cleaned up duplicate issue #{extra}", file=sys.stderr)
+PY

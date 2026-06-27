@@ -3,6 +3,5 @@
   "provider": "github-api",
   "remote": "github",
   "owner": "attebury",
-  "repo": "remogram-smoke",
-  "trustedHosts": ["github.com"]
+  "repo": "remogram-smoke"
 }
